@@ -1,8 +1,15 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { Cron, CronExpression, Interval } from '@nestjs/schedule';
-import { RegisterDto } from './dto/register';
-import { UserRegisteredEvent } from './events/register-user';
+
+class RegisterDto {
+  email: string;
+  password: string;
+}
+
+class UserRegisteredEvent {
+  constructor(public readonly userId: string, public readonly email: string) {}
+}
 
 @Injectable()
 export class AppService {
@@ -12,17 +19,14 @@ export class AppService {
     return 'Hello World!';
   }
 
-  registerUser(payload: RegisterDto): void {
-    this.logger.log('Creating user...', payload);
+  async registerUser(payload: RegisterDto): Promise<void> {
+    this.logger.log('Creating user...');
+    await new Promise<void>((resolve) => setTimeout(() => resolve(), 5000));
+    this.logger.log('New user registered...', payload.email);
     this.eventEmitter.emit(
       'new_registered_user',
-      new UserRegisteredEvent('uuid', payload.email),
+      new UserRegisteredEvent('12345', payload.email),
     );
-  }
-
-  @OnEvent('new_registered_user')
-  sendEmail(payload: UserRegisteredEvent) {
-    this.logger.log('Sending mail to new user', payload.email);
   }
 
   @OnEvent('new_registered_user', { async: true })

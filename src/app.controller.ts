@@ -1,6 +1,11 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { AppService } from './app.service';
-import { RegisterDto } from './dto/register';
+// import { RegisterDto } from './dto/register';
+
+class RegisterDto {
+  email: string;
+  password: string;
+}
 
 @Controller()
 export class AppController {
@@ -11,7 +16,7 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @Post()
+  @Post('/register')
   async register(@Body() registerBody: RegisterDto): Promise<void> {
     return this.appService.registerUser(registerBody);
   }
